@@ -44,7 +44,9 @@ EngCheckboxes.forEach(checkbox => {
 
       // INFO_ENG 값이 numberOnly보다 작은 레시피 필터링
       const filteredRecipes = recipeList.filter(
-        recipe => parseInt(recipe.INFO_ENG) < numberOnly
+        recipe =>
+          parseInt(recipe.INFO_ENG) < numberOnly &&
+          parseInt(recipe.INFO_ENG) > numberOnly - 50
       );
 
       // 필터링된 레시피를 화면에 표시
