@@ -8,6 +8,12 @@ let originUrl = new URL(
   `https://openapi.foodsafetykorea.go.kr/api/${API_KEY}/${serviceId}/${dataType}/${startIdx}/${endIdx}`
 );
 
+//pagination
+let totalResults = 0;
+let page = 1;
+const pageSize = 6;
+const groupSize = 5;
+
 // 열량 확인
 // 체크박스에 있는 값확인
 // 그 값 이하의 것들을 다 출력하는 url만들기
@@ -48,9 +54,12 @@ EngCheckboxes.forEach(checkbox => {
           parseInt(recipe.INFO_ENG) < numberOnly &&
           parseInt(recipe.INFO_ENG) > numberOnly - 50
       );
+      console.log('filter', filteredRecipes);
+      totalResults = filteredRecipes.length;
 
       // 필터링된 레시피를 화면에 표시
       renderRecipes(filteredRecipes);
+      paginationRender();
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -59,7 +68,13 @@ EngCheckboxes.forEach(checkbox => {
 
 function renderRecipes(recipes) {
   const recipeContainer = document.getElementById('recipe-container');
-  let recipeHTML = recipes.map(recipe => {
+
+  // 현재 페이지에서 표시할 레시피들을 선택
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const recipesToShow = recipes.slice(startIndex, endIndex);
+
+  let recipeHTML = recipesToShow.map(recipe => {
     let manualHTML = '';
     let order = 1;
 
@@ -77,7 +92,7 @@ function renderRecipes(recipes) {
     return `
       <div class ='recipe'>
         <h2>${recipe.RCP_NM}</h2>
-        <img src = "${recipe.ATT_FILE_NO_MAIN}" alt="Recipe Image"/>
+        <img src="${recipe.ATT_FILE_NO_MAIN}" alt="Recipe Image"/>
         <p>칼로리: ${Math.round(recipe.INFO_ENG)}</p>
         <p>${recipe.RCP_PARTS_DTLS}</p>
         ${manualHTML}
@@ -87,3 +102,50 @@ function renderRecipes(recipes) {
 
   recipeContainer.innerHTML = recipeHTML.join('');
 }
+
+//페이지 표시
+const paginationRender = () => {
+  const totalPages = Math.ceil(totalResults / pageSize);
+  const pageGroup = Math.ceil(page / groupSize);
+  let lastPage = pageGroup * groupSize;
+  if (lastPage > totalPages) {
+    lastPage = totalPages;
+  }
+  const firstPage =
+    lastPage - (groupSize - 1) <= 0 ? 1 : lastPage - (groupSize - 1);
+
+  let paginationHTML = ``;
+  if (page > 1 && totalPages > 2) {
+    paginationHTML = `<li class="page-item"><a class="page-link" onClick='moveToPage(1)'>&lt&lt</a></li>
+    <li class="page-item"><a class="page-link" onClick=(moveToPage(${
+      page - 1
+    }))>&lt</a></li>`;
+  } else if (totalPages > 1 && totalPages < 3) {
+    paginationHTML += `<li class="page-item"><a class="page-link" onClick=(moveToPage(${
+      page - 1
+    }))>&lt</a></li>`;
+  }
+
+  for (let i = firstPage; i <= lastPage; i++) {
+    paginationHTML += `<li class="page-item ${
+      i === page ? 'active' : ''
+    }" onClick="moveToPage(${i})"><a class="page-link">${i}</a></li>`;
+  }
+  if (page < totalPages && totalPages > 2) {
+    paginationHTML += `<li class="page-item"><a class="page-link" onClick=(moveToPage(${
+      page + 1
+    }))>&gt</a></li>
+        <li class="page-item"><a class="page-link" onClick=(moveToPage(${totalPages}))>&gt&gt</a></li>
+    `;
+  } else if (totalPages > 1 && totalPages < 3) {
+    paginationHTML += `<li class="page-item"><a class="page-link" onClick=(moveToPage(${
+      page + 1
+    }))>&gt</a></li>`;
+  }
+  document.querySelector('.pagination').innerHTML = paginationHTML;
+};
+const moveToPage = pageNum => {
+  console.log('move', pageNum);
+  page = pageNum;
+};
+renderRecipes(recipes);
