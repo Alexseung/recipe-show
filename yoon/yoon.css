@@ -6,7 +6,7 @@
 }
 
 .recipe {
-  border: 1px solid red;
+  border: 1px solid #676767;
   border-radius: 5px;
   margin: 10px;
   padding: 10px;
@@ -36,7 +36,7 @@
 }
 
 a {
-  color: red;
+  color: black;
   text-decoration: none;
   transition: color 0.3s ease;
 }
