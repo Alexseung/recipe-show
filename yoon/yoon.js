@@ -9,7 +9,7 @@ let url = new URL(
 let recipeList = [];
 let filteredRecipes = []; // 전역 변수로 설정
 
-// -----------------------------------메뉴 누르면 옆에 체크박스나옴
+// 메뉴 누르면 옆에 체크박스나옴
 // 체크박스를 통해서 레시피 불러오기 (칼로리와 동일)
 let menus = document.querySelectorAll('div.nutrition-box a');
 menus.forEach(menu => menu.addEventListener('click', e => showCheckBox(e)));
@@ -22,7 +22,7 @@ function showCheckBox(e) {
   if (previousCategory) {
     previousCategory.classList.remove('clicked');
   }
-
+  // 칼로리, 지방, 나트륨, 단백질의 체크박스 none, flex
   currentCategory.classList.add('clicked');
   previousCategory = currentCategory;
   if (e.currentTarget.textContent === '칼로리') {
@@ -100,7 +100,7 @@ function showCheckBox(e) {
   }
 }
 
-//pagination
+// 페이지네이션 설정
 let totalResults = 0;
 let page = 1;
 const pageSize = 6;
@@ -124,6 +124,8 @@ const getRecipes = async () => {
     errorRender(error.message);
   }
 };
+
+// 기본 영양소 값 설정
 const rangeMapping = {
   INFO_ENG: 50, // 칼로리
   INFO_FAT: 5, // 지방
@@ -134,7 +136,8 @@ const rangeMapping = {
 const EngCheckboxes = document.querySelectorAll(
   'input[name="INFO_ENG"], input[name="INFO_FAT"], input[name="INFO_NA"], input[name="INFO_PRO"]'
 );
-let category = null; // 전역 변수로 설정
+// 카테고리 일단 전역변수
+let category = null;
 
 EngCheckboxes.forEach(checkbox => {
   checkbox.addEventListener('click', async function () {
@@ -190,7 +193,7 @@ EngCheckboxes.forEach(checkbox => {
 });
 
 function renderRecipes(recipes, category) {
-  console.log('Category:', category); // 디버깅용 로그
+  console.log('Category:', category);
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
   const recipesToShow = recipes.slice(start, end);
@@ -201,6 +204,7 @@ function renderRecipes(recipes, category) {
     INFO_PRO: '단백질',
   };
 
+  // 조리법에 1 붙이기
   const recipesHTML = recipesToShow
     .map(recipe => {
       let manualHTML = '';
@@ -215,7 +219,7 @@ function renderRecipes(recipes, category) {
         }
       }
 
-      console.log('Recipe category value:', recipe[category]); // 디버깅용 로그
+      console.log('Recipe category value:', recipe[category]);
 
       return `
       <div class='recipe'>
