@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200..900&display=swap');
+* {
+  font-family: 'Noto Serif KR', serif;
+}
 .recipe-board {
   display: flex;
   flex-wrap: wrap;
@@ -6,18 +10,18 @@
 }
 
 .recipe {
-  border: 1px solid #676767;
+  border: 1px solid #e4e4e4;
   border-radius: 5px;
   margin: 10px;
   padding: 10px;
   width: 300px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #e4e4e4;
+  box-shadow: rgba(0, 0, 0, 0.3) 2.4px 2.4px 3.2px;
   transition: transform 0.3s ease;
 }
 
 .recipe:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
 }
 
 .recipe h2 {
@@ -60,4 +64,61 @@ a:hover {
   display: flex; /* Flexbox 레이아웃 사용 */
   flex-wrap: wrap;
   margin: 7px;
+}
+
+li:hover {
+  cursor: pointer;
+}
+
+.nutrition-menus > a {
+  font-weight: 550;
+  letter-spacing: 1px;
+  font-size: 19px;
+  text-decoration: none;
+  padding-right: 10px;
+  margin: 10px;
+  display: flex;
+  justify-content: space-around;
+  color: black;
+}
+
+.eng-check div,
+.eng-check input {
+  display: none;
+  font-size: 18px;
+}
+.eng-check > div {
+  display: flex;
+}
+.fat-check div,
+.fat-check input {
+  display: none;
+  font-size: 18px;
+}
+.fat-check > div {
+  display: flex;
+}
+.na-check div,
+.na-check input {
+  display: none;
+  font-size: 18px;
+}
+.na-check > div {
+  display: flex;
+}
+.pro-check div,
+.pro-check input {
+  display: none;
+  font-size: 18px;
+}
+.pro-check > div {
+  display: flex;
+}
+
+.nutrition-menus > a.clicked {
+  color: rgb(149, 106, 89);
+}
+
+.category-font {
+  font-weight: 600;
 }

@@ -3,10 +3,102 @@ const serviceId = 'COOKRCP01';
 const dataType = 'json';
 let startIdx = 1;
 let endIdx = 100;
-let recipeList = [];
-let originUrl = new URL(
+let url = new URL(
   `https://openapi.foodsafetykorea.go.kr/api/${API_KEY}/${serviceId}/${dataType}/${startIdx}/${endIdx}`
 );
+let recipeList = [];
+let filteredRecipes = []; // 전역 변수로 설정
+
+// -----------------------------------메뉴 누르면 옆에 체크박스나옴
+// 체크박스를 통해서 레시피 불러오기 (칼로리와 동일)
+let menus = document.querySelectorAll('div.nutrition-box a');
+menus.forEach(menu => menu.addEventListener('click', e => showCheckBox(e)));
+let previousCategory = null;
+
+function showCheckBox(e) {
+  const currentCategory = e.currentTarget;
+  console.log(currentCategory, currentCategory.textContent);
+
+  if (previousCategory) {
+    previousCategory.classList.remove('clicked');
+  }
+
+  currentCategory.classList.add('clicked');
+  previousCategory = currentCategory;
+  if (e.currentTarget.textContent === '칼로리') {
+    const engCheckElements = document.querySelectorAll(
+      '.eng-check div, .eng-check input'
+    );
+    const otherCheckElements = document.querySelectorAll(
+      '.fat-check div, .fat-check input, .na-check div, .na-check input, .pro-check div, .pro-check input'
+    );
+
+    engCheckElements.forEach(element => {
+      element.style.display =
+        element.style.display === 'none' || element.style.display === ''
+          ? 'flex'
+          : 'none';
+    });
+
+    otherCheckElements.forEach(element => {
+      element.style.display = 'none';
+    });
+  } else if (e.currentTarget.textContent === '지방') {
+    const fatCheckElements = document.querySelectorAll(
+      '.fat-check div, .fat-check input'
+    );
+    const otherCheckElements = document.querySelectorAll(
+      '.eng-check div, .eng-check input, .na-check div, .na-check input, .pro-check div, .pro-check input'
+    );
+
+    fatCheckElements.forEach(element => {
+      element.style.display =
+        element.style.display === 'none' || element.style.display === ''
+          ? 'flex'
+          : 'none';
+    });
+
+    otherCheckElements.forEach(element => {
+      element.style.display = 'none';
+    });
+  } else if (e.currentTarget.textContent === '나트륨') {
+    const naCheckElements = document.querySelectorAll(
+      '.na-check div, .na-check input'
+    );
+    const otherCheckElements = document.querySelectorAll(
+      '.eng-check div, .eng-check input, .fat-check div, .fat-check input, .pro-check div, .pro-check input'
+    );
+
+    naCheckElements.forEach(element => {
+      element.style.display =
+        element.style.display === 'none' || element.style.display === ''
+          ? 'flex'
+          : 'none';
+    });
+
+    otherCheckElements.forEach(element => {
+      element.style.display = 'none';
+    });
+  } else if (e.currentTarget.textContent === '단백질') {
+    const proCheckElements = document.querySelectorAll(
+      '.pro-check div, .pro-check input'
+    );
+    const otherCheckElements = document.querySelectorAll(
+      '.eng-check div, .eng-check input, .fat-check div, .fat-check input, .na-check div, .na-check input'
+    );
+
+    proCheckElements.forEach(element => {
+      element.style.display =
+        element.style.display === 'none' || element.style.display === ''
+          ? 'flex'
+          : 'none';
+    });
+
+    otherCheckElements.forEach(element => {
+      element.style.display = 'none';
+    });
+  }
+}
 
 //pagination
 let totalResults = 0;
@@ -14,93 +106,144 @@ let page = 1;
 const pageSize = 6;
 const groupSize = 5;
 
-// 열량 확인
-// 체크박스에 있는 값확인
-// 그 값 이하의 것들을 다 출력하는 url만들기
+// 레시피 불러오기 (error catch)
+const getRecipes = async () => {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log('data', data);
+    if (response.status === 200) {
+      if (data.COOKRCP01.row.length === 0) {
+        throw new Error('No result for this');
+      }
+      recipeList = data.COOKRCP01.row;
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    errorRender(error.message);
+  }
+};
+const rangeMapping = {
+  INFO_ENG: 50, // 칼로리
+  INFO_FAT: 5, // 지방
+  INFO_NA: 100, // 나트륨
+  INFO_PRO: 5, // 단백질
+};
 
-const EngCheckboxes = document.querySelectorAll('input[name="INFO_ENG"]');
+const EngCheckboxes = document.querySelectorAll(
+  'input[name="INFO_ENG"], input[name="INFO_FAT"], input[name="INFO_NA"], input[name="INFO_PRO"]'
+);
+let category = null; // 전역 변수로 설정
 
 EngCheckboxes.forEach(checkbox => {
   checkbox.addEventListener('click', async function () {
-    // 현재 클릭된 체크박스가 체크된 상태인지 확인
     const isChecked = this.checked;
+    page = 1;
 
-    // 모든 체크박스를 순회하며 현재 클릭된 체크박스 이외의 체크박스들을 unchecked로 변경
-    EngCheckboxes.forEach(cb => {
-      if (cb !== this) {
-        cb.checked = false;
+    // 나머지 체크박스 확인, 체크 해제
+    EngCheckboxes.forEach(box => {
+      if (box !== this) {
+        box.checked = false;
       }
     });
 
-    // 현재 클릭된 체크박스 옆에 있는 <div> 요소의 텍스트 내용에서 숫자만 추출하여 출력
     const divText = this.nextElementSibling.textContent.trim();
-    const numberOnly = parseInt(divText.replace(/[^0-9]/g, '')); // 숫자만 추출하여 정수로 변환
+    const numberOnly = parseInt(divText.replace(/[^0-9]/g, ''));
 
-    console.log(`Number Only: ${numberOnly}`);
-    let url = `${originUrl}`;
+    // 카테고리 추출
+    category = this.name; // 전역 변수에 설정
+    console.log(`Category extracted: ${category}`); // 확인용
+
+    // 카테고리에 따라 범위 설정
+    const range = rangeMapping[category] || 50; // 기본값 50으로 설정
+
+    console.log(`${category}: ${numberOnly}`);
 
     try {
-      // 데이터를 fetch로 받아옴
       const response = await fetch(url);
       const data = await response.json();
       console.log('data', data);
 
-      // recipeList에 데이터를 저장
-      const recipeList = data.COOKRCP01.row;
+      recipeList = data.COOKRCP01.row;
 
-      // INFO_ENG 값이 numberOnly보다 작은 레시피 필터링
-      const filteredRecipes = recipeList.filter(
-        recipe =>
-          parseInt(recipe.INFO_ENG) < numberOnly &&
-          parseInt(recipe.INFO_ENG) > numberOnly - 50
-      );
-      console.log('filter', filteredRecipes);
+      // 필터링된 레시피 리스트
+      filteredRecipes = recipeList.filter(recipe => {
+        // category 속성의 존재 여부 확인
+        console.log('Recipe object:', recipe);
+        const value = parseInt(recipe[category]);
+        return (
+          !isNaN(value) && value < numberOnly && value > numberOnly - range
+        );
+      });
+
       totalResults = filteredRecipes.length;
+      console.log('filter', filteredRecipes);
 
-      // 필터링된 레시피를 화면에 표시
-      renderRecipes(filteredRecipes);
+      renderRecipes(filteredRecipes, category); // category 매개변수 전달
       paginationRender();
     } catch (error) {
       console.error('Error fetching data:', error);
+      errorRender('데이터를 가져오는 도중 오류가 발생했습니다.');
     }
   });
 });
 
-function renderRecipes(recipes) {
-  const recipeContainer = document.getElementById('recipe-container');
+function renderRecipes(recipes, category) {
+  console.log('Category:', category); // 디버깅용 로그
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const recipesToShow = recipes.slice(start, end);
+  const categoryLabel = {
+    INFO_ENG: '칼로리',
+    INFO_FAT: '지방',
+    INFO_NA: '나트륨',
+    INFO_PRO: '단백질',
+  };
 
-  // 현재 페이지에서 표시할 레시피들을 선택
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const recipesToShow = recipes.slice(startIndex, endIndex);
-
-  let recipeHTML = recipesToShow.map(recipe => {
-    let manualHTML = '';
-    let order = 1;
-
-    for (let i = 1; i <= 20; i++) {
-      let number = i < 10 ? '0' + i : i;
-      let manualNum = recipe['MANUAL' + number];
-
-      if (manualNum && manualNum.trim() !== '') {
-        manualNum = manualNum.replace(/^\d+/, order);
-        manualHTML += `<p>${manualNum}</p>`;
-        order++;
+  const recipesHTML = recipesToShow
+    .map(recipe => {
+      let manualHTML = '';
+      let order = 1;
+      for (let i = 1; i <= 20; i++) {
+        let number = i < 10 ? '0' + i : i;
+        let manualNum = recipe['MANUAL' + number];
+        if (manualNum && manualNum.trim() !== '') {
+          manualNum = manualNum.replace(/^\d+/, order);
+          manualHTML += `<p>${manualNum}</p>`;
+          order++;
+        }
       }
-    }
 
-    return `
-      <div class ='recipe'>
-        <h2>${recipe.RCP_NM}</h2>
+      console.log('Recipe category value:', recipe[category]); // 디버깅용 로그
+
+      return `
+      <div class='recipe'>
+        <h2><strong>${recipe.RCP_NM}</strong></h2>
         <img src="${recipe.ATT_FILE_NO_MAIN}" alt="Recipe Image"/>
-        <p>칼로리: ${Math.round(recipe.INFO_ENG)}</p>
+        <p><strong>${categoryLabel[category] || '정보 없음'}: ${Math.round(
+        recipe[category] || 0
+      )}</strong></p>
         <p>${recipe.RCP_PARTS_DTLS}</p>
-        ${manualHTML}
+        <strong>${manualHTML}</strong>
       </div>
     `;
-  });
+    })
+    .join('');
 
-  recipeContainer.innerHTML = recipeHTML.join('');
+  document.getElementById('recipe-container').innerHTML = recipesHTML;
+}
+
+function errorRender(message) {
+  document.getElementById(
+    'recipe-container'
+  ).innerHTML = `<p>Error: ${message}</p>`;
+}
+
+function errorRender(message) {
+  document.getElementById(
+    'recipe-container'
+  ).innerHTML = `<p>Error: ${message}</p>`;
 }
 
 //페이지 표시
@@ -116,14 +259,14 @@ const paginationRender = () => {
 
   let paginationHTML = ``;
   if (page > 1 && totalPages > 2) {
-    paginationHTML = `<li class="page-item"><a class="page-link" onClick='moveToPage(1)'>&lt&lt</a></li>
-    <li class="page-item"><a class="page-link" onClick=(moveToPage(${
+    paginationHTML += `<li class="page-item"><a class="page-link" onClick="moveToPage(1)">&lt&lt</a></li>
+    <li class="page-item"><a class="page-link" onClick="moveToPage(${
       page - 1
-    }))>&lt</a></li>`;
+    })">&lt</a></li>`;
   } else if (totalPages > 1 && totalPages < 3) {
-    paginationHTML += `<li class="page-item"><a class="page-link" onClick=(moveToPage(${
+    paginationHTML += `<li class="page-item"><a class="page-link" onClick="moveToPage(${
       page - 1
-    }))>&lt</a></li>`;
+    })">&lt</a></li>`;
   }
 
   for (let i = firstPage; i <= lastPage; i++) {
@@ -132,20 +275,30 @@ const paginationRender = () => {
     }" onClick="moveToPage(${i})"><a class="page-link">${i}</a></li>`;
   }
   if (page < totalPages && totalPages > 2) {
-    paginationHTML += `<li class="page-item"><a class="page-link" onClick=(moveToPage(${
+    paginationHTML += `<li class="page-item"><a class="page-link" onClick="moveToPage(${
       page + 1
-    }))>&gt</a></li>
-        <li class="page-item"><a class="page-link" onClick=(moveToPage(${totalPages}))>&gt&gt</a></li>
+    })">&gt</a></li>
+        <li class="page-item"><a class="page-link" onClick="moveToPage(${totalPages})">&gt&gt</a></li>
     `;
   } else if (totalPages > 1 && totalPages < 3) {
-    paginationHTML += `<li class="page-item"><a class="page-link" onClick=(moveToPage(${
+    paginationHTML += `<li class="page-item"><a class="page-link" onClick="moveToPage(${
       page + 1
-    }))>&gt</a></li>`;
+    })">&gt</a></li>`;
   }
   document.querySelector('.pagination').innerHTML = paginationHTML;
 };
+
 const moveToPage = pageNum => {
   console.log('move', pageNum);
   page = pageNum;
+  if (category) {
+    // category가 설정되어 있는지 확인
+    renderRecipes(filteredRecipes, category);
+    paginationRender();
+  } else {
+    console.error('Category is not defined');
+    errorRender('카테고리가 정의되지 않았습니다.');
+  }
 };
-renderRecipes(recipes);
+
+getRecipes(); // 초기 레시피 불러오기
