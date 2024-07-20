@@ -14,7 +14,8 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="css/headere.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="../js/common.js"></script>
@@ -100,25 +101,17 @@
         </div>
 
         <nav class="nav-menu">
-          <a href="../index.html">
-            <div
-              class="nav-menu-style active-nav"
-              style="
-                color: rgb(149, 106, 89);
-                border-bottom: 2px solid rgb(147, 112, 98);
-              "
-            >
-              메인
-            </div>
-          </a>
           <a href="../yoon/yoon.html">
-            <div class="nav-menu-style">다이어트</div>
+            <div class="nav-menu-style" id="diet-menu">다이어트 레시피</div>
           </a>
           <a href="../kang/diet.html">
-            <div class="nav-menu-style">강은영</div>
+            <div class="nav-menu-style" id="random-menu">강은영</div>
+          </a>
+          <a href="../chan/roulette.html">
+            <div class="nav-menu-style" id="ingredient-menu">랜덤 레시피</div>
           </a>
           <a href="../park/ingredient.html">
-            <div class="nav-menu-style">박민우</div>
+            <div class="nav-menu-style" id="ingredient-menu">박민우</div>
           </a>
           <a href="">
             <div></div>
@@ -132,10 +125,5 @@
 
     <!-- 메인 -->
     <main></main>
-
-    <!-- 공통 footer -->
-    <footer>
-      <div class="inner"></div>
-    </footer>
   </body>
 </html>

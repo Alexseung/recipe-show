@@ -52,7 +52,6 @@ a:hover {
 .nutrition-box > div {
   display: flex;
   align-items: center;
-  margin-right: 20px;
 }
 .nutrition-box input {
   margin: 0.4rem;
@@ -82,6 +81,19 @@ li:hover {
   color: black;
 }
 
+.eng-check div,
+.fat-check div,
+.na-check div,
+.pro-check div {
+  font-weight: 600;
+}
+
+.eng-check input,
+.na-check input,
+.fat-check input,
+.pro-check input {
+  zoom: 1.5;
+}
 .eng-check div,
 .eng-check input {
   display: none;
@@ -113,6 +125,17 @@ li:hover {
 }
 .pro-check > div {
   display: flex;
+}
+
+.eng-check input,
+.eng-check div,
+.fat-check input,
+.fat-check div,
+.na-check input,
+.na-check div,
+.pro-check input,
+.pro-check div {
+  margin: 0 5px;
 }
 
 .nutrition-menus > a.clicked {
