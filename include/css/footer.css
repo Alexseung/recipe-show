@@ -1,6 +1,19 @@
+#wrap {
+  min-height: 100%;
+  position: relative;
+}
+footer {
+  bottom: 0px;
+  position: absolute;
+  height: 10rem;
+}
+
 footer {
   width: 100%;
   font-size: 12px;
+  bottom: 0px;
+  position: absolute;
+  height: 10rem;
 }
 footer nav {
   width: 100%;
