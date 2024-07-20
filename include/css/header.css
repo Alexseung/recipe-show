@@ -139,3 +139,18 @@ footer address > div > p {
 .footer-logo > p {
   margin: 0;
 }
+
+@media (max-width: 580px) {
+  .nav-menu-style {
+    font-size: 13px;
+  }
+}
+@media (max-width: 430px) {
+  .nav-menu-style {
+    font-size: 12px;
+  }
+  .user-action a:not(:first-child),
+  .user-action span {
+    display: none;
+  }
+}
