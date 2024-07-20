@@ -9,6 +9,11 @@ body {
   height: 100%;
   font-family: Arial, sans-serif; /* 원하는 기본 글꼴 설정 */
 }
+/* nav menu */
+.active-nav {
+  color: rgb(149, 106, 89);
+  border-bottom: 2px solid rgb(147, 112, 98);
+}
 
 /* header-banner */
 .header-banner {
@@ -58,7 +63,7 @@ body {
 .nav-menu a {
   text-decoration: none;
 }
-.nav-menu-style {
+.nav-menu a {
   padding: 0px 15px 10px 15px;
   box-sizing: border-box;
   cursor: pointer;
@@ -72,9 +77,23 @@ body {
   line-height: 20px;
   text-align: center;
 }
+/* .nav-menu-style {
+  padding: 0px 15px 10px 15px;
+  box-sizing: border-box;
+  cursor: pointer;
+
+  font-family: 'Noto Sans KR', Helvetica, 'Helvetica Neue', Arial, 'sans-serif';
+  color: black;
+  font-size: 16px;
+  font-weight: 550;
+
+  letter-spacing: 1px;
+  line-height: 20px;
+  text-align: center;
+} */
 
 /* border-bottom: 2px solid rgb(147, 112, 98); */
-.nav-menu-style:hover {
+.nav-menu a:hover {
   color: rgb(191, 145, 126);
 }
 
