@@ -146,3 +146,13 @@ li:hover {
 .category-font {
   font-weight: 600;
 }
+
+/* carousel part */
+.carousel {
+  width: 1000px;
+  height: 360px;
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  left: 11%;
+}

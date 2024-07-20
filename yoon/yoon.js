@@ -152,7 +152,9 @@ EngCheckboxes.forEach(checkbox => {
     });
 
     const divText = this.nextElementSibling.textContent.trim();
-    const numberOnly = parseInt(divText.replace(/[^0-9]/g, ''));
+    const numberOnly = parseInt(
+      divText.replace(/[^0-9]/g, '').replace(/[a-zA-Z]{1,3}$/, '')
+    );
 
     // 카테고리 추출
     category = this.name; // 전역 변수에 설정
@@ -203,6 +205,12 @@ function renderRecipes(recipes, category) {
     INFO_NA: '나트륨',
     INFO_PRO: '단백질',
   };
+  const categoryUnit = {
+    INFO_ENG: 'cal',
+    INFO_FAT: 'g',
+    INFO_NA: 'mg',
+    INFO_PRO: 'g',
+  };
 
   // 조리법에 1 붙이기
   const recipesHTML = recipesToShow
@@ -225,9 +233,9 @@ function renderRecipes(recipes, category) {
       <div class='recipe'>
         <h2><strong>${recipe.RCP_NM}</strong></h2>
         <img src="${recipe.ATT_FILE_NO_MAIN}" alt="Recipe Image"/>
-        <p><strong>${categoryLabel[category] || '정보 없음'}: ${Math.round(
+<p><strong>${categoryLabel[category] || '정보 없음'}: ${Math.round(
         recipe[category] || 0
-      )}</strong></p>
+      )} ${categoryUnit[category] || ''}</strong></p>
         <p>${recipe.RCP_PARTS_DTLS}</p>
         <strong>${manualHTML}</strong>
       </div>
