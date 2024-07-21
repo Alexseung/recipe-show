@@ -5,17 +5,16 @@ const dataType = 'json';
 let recipeList = [];
 let product = [];
 const colors = [
-  '#dc0936',
-  '#e6471d',
-  '#f7a416',
-  '#efe61f',
-  '#60b236',
-  '#209b6c',
-  '#169ed8',
-  '#3f297e',
-  '#87207b',
-  '#be107f',
-  '#e7167b',
+  '#EE3F4A', // 파스텔 빨강
+  '#F2718B', // 파스텔 핑크
+  '#7FB562', // 파스텔 초록
+  '#22A9E1', // 파스텔 파랑
+  '#F79552', // 파스텔 오렌지
+  '#BBB8DD', // 파스텔 보라
+  '#FECC4F', // 파스텔 노랑
+  '#D4E25B', // 파스텔 연두
+  '#AEDFDC', // 파스텔 청록
+  '#49B9BA', // 파스텔 민트
 ];
 
 const $c = document.querySelector('canvas');
@@ -90,10 +89,16 @@ function newMake() {
 
   if (product.length === 0) return;
 
-  const [cw, ch] = [$c.width / 2, $c.height / 2];
-  const arc = Math.PI / (product.length / 2);
+  const isMobile = window.innerWidth <= 767;
+  const canvasSize = isMobile ? 300 : 650;
+  $c.width = canvasSize;
+  $c.height = canvasSize;
 
-  for (let i = 0; i < product.length; i++) {
+  const [cw, ch] = [$c.width / 2, $c.height / 2];
+  const arcCount = isMobile ? 6 : product.length; // 모바일에서는 6칸으로 조정
+  const arc = Math.PI / (arcCount / 2);
+
+  for (let i = 0; i < arcCount; i++) {
     ctx.beginPath();
     ctx.fillStyle = colors[i % colors.length];
     ctx.moveTo(cw, ch);
@@ -103,10 +108,10 @@ function newMake() {
   }
 
   ctx.fillStyle = 'white';
-  ctx.font = '18px Pretendard';
+  ctx.font = isMobile ? '14px Pretendard' : '18px Pretendard';
   ctx.textAlign = 'center';
 
-  for (let i = 0; i < product.length; i++) {
+  for (let i = 0; i < arcCount; i++) {
     const angle = arc * i + arc / 2;
 
     ctx.save();
@@ -116,9 +121,9 @@ function newMake() {
     );
     ctx.rotate(angle + Math.PI / 2);
 
-    const textParts = splitText(product[i], 10);
+    const textParts = splitText(product[i], isMobile ? 8 : 10);
     textParts.forEach((part, index) => {
-      ctx.fillText(part, 0, index * 20);
+      ctx.fillText(part, 0, index * (isMobile ? 15 : 20));
     });
 
     ctx.restore();
@@ -130,9 +135,12 @@ function rotate() {
   $c.style.transform = 'initial';
   $c.style.transition = 'initial';
 
+  const isMobile = window.innerWidth <= 767;
+  const arcCount = isMobile ? 6 : product.length;
+
   setTimeout(() => {
-    const ran = Math.floor(Math.random() * product.length);
-    const arc = 360 / product.length;
+    const ran = Math.floor(Math.random() * arcCount);
+    const arc = 360 / arcCount;
     const rotate = ran * arc + 3600 + arc * 3 - arc / 4;
 
     $c.style.transform = `rotate(-${rotate}deg)`;
@@ -146,6 +154,7 @@ function rotate() {
     }, 2000);
   }, 1);
 }
+
 function showRecipe(recipe) {
   // 이미지 URL 배열로 변환 (기본값 빈 배열)
   const images = [];
@@ -183,6 +192,4 @@ function showRecipe(recipe) {
   document.getElementById('recipe-board').innerHTML = recipeHTML;
 }
 
-// ${images
-//   .map(img => `<img src="${img}" alt="레시피 이미지">`)
-//   .join('')}
+window.addEventListener('resize', newMake);
