@@ -147,6 +147,20 @@ li:hover {
   font-weight: 600;
 }
 
+div.recipe img {
+  cursor: pointer;
+}
+
+/* pagination */
+.page-area {
+  display: flex;
+  justify-content: center;
+}
+.pagination li a {
+  color: black;
+  border: none;
+}
+
 /* carousel part */
 .carousel {
   width: 1000px;

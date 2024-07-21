@@ -194,6 +194,36 @@ EngCheckboxes.forEach(checkbox => {
   });
 });
 
+// 레시피 모달 띄우기
+const showDetail = index => {
+  const showRecipe = filteredRecipes; // 필터링된, 현재 페이지에 있는거 적용
+
+  let recipeOrderHTML = ``;
+  let order = 1;
+  for (let i = 1; i <= 20; i++) {
+    let number = i < 10 ? '0' + i : i;
+    const imgText = showRecipe[index]['MANUAL_IMG' + number];
+    const text = showRecipe[index]['MANUAL' + number];
+    if (imgText && text) {
+      recipeOrderHTML += `<div class="d-flex align-items-start gap-3 m-3">
+            <img src="${imgText}" alt="" width="170" />
+            <p>${text.replace(/^\d+/, order++)}</p>
+        </div>`;
+    }
+  }
+  const detailHTML = `<div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">${showRecipe[index].RCP_NM}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">      
+            ${recipeOrderHTML}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>`;
+  document.querySelector('.modal-content').innerHTML = detailHTML;
+};
+
 function renderRecipes(recipes, category) {
   console.log('Category:', category);
   const start = (page - 1) * pageSize;
@@ -214,7 +244,7 @@ function renderRecipes(recipes, category) {
 
   // 조리법에 1 붙이기
   const recipesHTML = recipesToShow
-    .map(recipe => {
+    .map((recipe, index) => {
       let manualHTML = '';
       let order = 1;
       for (let i = 1; i <= 20; i++) {
@@ -232,12 +262,14 @@ function renderRecipes(recipes, category) {
       return `
       <div class='recipe'>
         <h2><strong>${recipe.RCP_NM}</strong></h2>
-        <img src="${recipe.ATT_FILE_NO_MAIN}" alt="Recipe Image"/>
-<p><strong>${categoryLabel[category] || '정보 없음'}: ${Math.round(
+        <img src="${
+          recipe.ATT_FILE_NO_MAIN
+        }" alt="Recipe Image" onClick="showDetail(${index})" data-bs-toggle="modal" data-bs-target="#recipeModal"/>
+        <p><strong>${categoryLabel[category] || '정보 없음'}: ${Math.round(
         recipe[category] || 0
       )} ${categoryUnit[category] || ''}</strong></p>
         <p>${recipe.RCP_PARTS_DTLS}</p>
-        <strong>${manualHTML}</strong>
+
       </div>
     `;
     })
@@ -245,12 +277,67 @@ function renderRecipes(recipes, category) {
 
   document.getElementById('recipe-container').innerHTML = recipesHTML;
 }
-
-function errorRender(message) {
-  document.getElementById(
-    'recipe-container'
-  ).innerHTML = `<p>Error: ${message}</p>`;
+{
+  /* <strong>${manualHTML}</strong> */
 }
+
+// function renderRecipes(recipes, category) {
+//   console.log('Category:', category);
+//   const start = (page - 1) * pageSize;
+//   const end = start + pageSize;
+//   const recipesToShow = recipes.slice(start, end);
+//   const categoryLabel = {
+//     INFO_ENG: '칼로리',
+//     INFO_FAT: '지방',
+//     INFO_NA: '나트륨',
+//     INFO_PRO: '단백질',
+//   };
+//   const categoryUnit = {
+//     INFO_ENG: 'cal',
+//     INFO_FAT: 'g',
+//     INFO_NA: 'mg',
+//     INFO_PRO: 'g',
+//   };
+
+//   // 조리법에 1 붙이기
+//   const recipesHTML = recipesToShow
+//     .map(recipe => {
+//       let manualHTML = '';
+//       let order = 1;
+//       for (let i = 1; i <= 20; i++) {
+//         let number = i < 10 ? '0' + i : i;
+//         let manualNum = recipe['MANUAL' + number];
+//         if (manualNum && manualNum.trim() !== '') {
+//           manualNum = manualNum.replace(/^\d+/, order);
+//           manualHTML += `<p>${manualNum}</p>`;
+//           order++;
+//         }
+//       }
+
+//       console.log('Recipe category value:', recipe[category]);
+
+//       return `
+//       <div class='recipe'>
+//         <h2><strong>${recipe.RCP_NM}</strong></h2>
+//         <img src="${recipe.ATT_FILE_NO_MAIN}" alt="Recipe Image"/>
+// <p><strong>${categoryLabel[category] || '정보 없음'}: ${Math.round(
+//         recipe[category] || 0
+//       )} ${categoryUnit[category] || ''}</strong></p>
+//         <p>${recipe.RCP_PARTS_DTLS}</p>
+//         <strong>${manualHTML}</strong>
+//       </div>
+//     `;
+//     })
+//     .join('');
+
+//   document.getElementById('recipe-container').innerHTML = recipesHTML;
+// }
+
+// function errorRender(message) {
+//   document.getElementById(
+//     'recipe-container'
+//   ).innerHTML = `<p>Error: ${message}</p>`;
+// }
 
 function errorRender(message) {
   document.getElementById(

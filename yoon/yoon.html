@@ -149,6 +149,43 @@
           </div>
 
           <div class="recipe-board" id="recipe-container"></div>
+
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="recipeModal"
+            tabindex="-1"
+            aria-labelledby="recipeModalLabel"
+            aria-hidden="true"
+          >
+            <div
+              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="recipeModalLabel">
+                    Modal title
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">...</div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- pagination -->
           <nav aria-label="Page navigation example" class="page-area">
             <ul class="pagination"></ul>
@@ -171,6 +208,7 @@
     <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
     <!-- 커스텀 JS 로드 -->
     <script src="yoon.js"></script>
+    <script src="yoonapikey.js"></script>
 
     <script>
       $(document).ready(function () {
